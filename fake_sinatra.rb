@@ -17,8 +17,14 @@ class FakeSinatra
   end
 
   def service(req, res)
+    @params = req.query
     method = req.request_method.to_sym
-    res.body = "#{@routes[[method, req.path]].call} - served by FakeSinatra"
+    block = @routes[[method, req.path]]
+    res.body = FakeSinatra.get_instance.instance_eval(&block).to_s
+  end
+
+  def params
+    @params
   end
 
   def register(method, path, block)

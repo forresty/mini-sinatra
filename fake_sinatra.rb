@@ -19,8 +19,20 @@ class FakeSinatra
   def service(req, res)
     @params = req.query
     method = req.request_method.to_sym
-    block = @routes[[method, req.path]]
-    res.body = FakeSinatra.get_instance.instance_eval(&block).to_s
+
+    wildcard_param = nil
+    block = @routes.find { |path, _|
+      pattern, wildcard_param = to_pattern(path)
+      pattern =~ req.path
+    }[1][method] rescue nil
+
+    if block
+      # $1 will be the wildcard param value
+      @params.merge!({ wildcard_param => $1 }) if wildcard_param
+      res.body = FakeSinatra.get_instance.instance_eval(&block).to_s
+    else
+      res.body = "unknown route: #{method} #{req.path}"
+    end
   end
 
   def params
@@ -29,7 +41,22 @@ class FakeSinatra
 
   def register(method, path, block)
     @routes ||= {}
-    @routes[[method, path]] = block
+    @routes[path] ||= {}
+    @routes[path][method] = block
+  end
+
+  private
+
+  def to_pattern(path)
+    # '/articles/' => %r{\A/articles/?\z}
+    # '/articles/:id' => %r{\A/articles/([^/]+)/?\z}
+    # '/restaurants/:id/comments' => %r{\A/restaurants/([^/]+)/comments/?\z}
+
+    # remove trailing slashes then add wildcard capture group
+    path = path.gsub(/\/+\z/, '').gsub(/\:([^\/]+)/, '([^/]+)')
+
+    # $1 will be the matched wildcard param key if present
+    [%r{\A#{path}/?\z}, $1]
   end
 
   module Helpers

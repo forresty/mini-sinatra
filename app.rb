@@ -32,3 +32,12 @@ end
 get '/perm-redirect' do
   redirect 'http://google.com', 301
 end
+
+get '/index' do
+  erb :index
+end
+
+get '/time' do
+  @time = Time.now
+  erb :time
+end

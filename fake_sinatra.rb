@@ -37,6 +37,13 @@ class FakeSinatra
 
   private
 
+  def erb(view_path)
+    path = File.expand_path("./views/#{view_path}.erb", __dir__)
+    template = ERB.new(File.read(path))
+
+    template.result(binding)
+  end
+
   def redirect(target, code=302)
     status(code)
     headers 'Location' => target

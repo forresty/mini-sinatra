@@ -93,6 +93,9 @@ status, headers, _ = get('/perm-redirect')
 assert_equal 301, status
 assert_equal 'http://google.com', headers['location']
 
+_, _, body = get('/index')
+assert_match /works/, body
+
 puts
 puts
 puts "all passed."

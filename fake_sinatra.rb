@@ -17,22 +17,19 @@ class FakeSinatra
   end
 
   def service(req, res)
-    @params = req.query
-    method = req.request_method.to_sym
+    @status = 200 # reset to default
 
-    wildcard_param = nil
-    block = @routes.find { |path, _|
-      pattern, wildcard_param = to_pattern(path)
-      pattern =~ req.path
-    }[1][method] rescue nil
+    block, path_params = match_route(req)
 
-    if block
-      # $1 will be the wildcard param value
-      @params.merge!({ wildcard_param => $1 }) if wildcard_param
-      res.body = FakeSinatra.get_instance.instance_eval(&block).to_s
-    else
-      res.body = "unknown route: #{method} #{req.path}"
-    end
+    return not_found!(req, res) if block.nil?
+
+    @params = req.query.merge(path_params)
+    res.body = FakeSinatra.get_instance.instance_eval(&block).to_s
+    res.status = @status # need to do this after evaluating the block
+  end
+
+  def status(code)
+    @status = code
   end
 
   def params
@@ -46,6 +43,27 @@ class FakeSinatra
   end
 
   private
+
+  def not_found!(req, res)
+    method = req.request_method.to_sym
+
+    res.status = 404
+    res.body = "unknown route: #{method} #{req.path}"
+  end
+
+  def match_route(req)
+    method = req.request_method.to_sym
+
+    wildcard_param = nil
+
+    block = @routes.find { |path, _|
+      pattern, wildcard_param = to_pattern(path)
+      pattern =~ req.path
+    }[1][method] rescue nil
+
+    # $1 will be the wildcard param value
+    [block, { wildcard_param => $1 }.compact]
+  end
 
   def to_pattern(path)
     # '/articles/' => %r{\A/articles/?\z}

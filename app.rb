@@ -1,5 +1,6 @@
 # app.rb
 require_relative 'fake_sinatra'
+# require 'sinatra'
 
 # '/articles/:id' => %r{\A/articles/([^/]+)/?\z}
 get '/articles/:id' do
@@ -11,6 +12,7 @@ get '/restaurants/:id/comments' do
   params
 end
 
-get '/articles/' do
+post '/articles' do
+  status 201
   params
 end

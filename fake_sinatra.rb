@@ -37,8 +37,8 @@ class FakeSinatra
 
   private
 
-  def erb(view_path)
-    path = File.expand_path("./views/#{view_path}.erb", __dir__)
+  def erb(view)
+    path = File.expand_path("./views/#{view}.erb", __dir__)
     template = ERB.new(File.read(path))
 
     template.result(binding)

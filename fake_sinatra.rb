@@ -54,15 +54,15 @@ class FakeSinatra
   def match_route(req)
     method = req.request_method.to_sym
 
-    wildcard_param = nil
+    named_param = nil
 
     block = @routes.find { |path, _|
-      pattern, wildcard_param = to_pattern(path)
+      pattern, named_param = to_pattern(path)
       pattern =~ req.path
     }[1][method] rescue nil
 
-    # $1 will be the wildcard param value
-    [block, { wildcard_param => $1 }.compact]
+    # $1 will be the named param value
+    [block, { named_param => $1 }.compact]
   end
 
   def to_pattern(path)
@@ -70,10 +70,10 @@ class FakeSinatra
     # '/articles/:id' => %r{\A/articles/([^/]+)/?\z}
     # '/restaurants/:id/comments' => %r{\A/restaurants/([^/]+)/comments/?\z}
 
-    # remove trailing slashes then add wildcard capture group
+    # remove trailing slashes then add named capture group
     path = path.gsub(/\/+\z/, '').gsub(/\:([^\/]+)/, '([^/]+)')
 
-    # $1 will be the matched wildcard param key if present
+    # $1 will be the matched named param key if present
     [%r{\A#{path}/?\z}, $1]
   end
 

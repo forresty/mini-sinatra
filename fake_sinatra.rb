@@ -28,14 +28,6 @@ class FakeSinatra
     res.status = @status # need to do this after evaluating the block
   end
 
-  def status(code)
-    @status = code
-  end
-
-  def params
-    @params
-  end
-
   def register(method, path, block)
     @routes ||= {}
     @routes[path] ||= {}
@@ -43,6 +35,14 @@ class FakeSinatra
   end
 
   private
+
+  def status(code)
+    @status = code
+  end
+
+  def params
+    @params
+  end
 
   def not_found!(req, res)
     method = req.request_method.to_sym

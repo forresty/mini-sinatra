@@ -1,5 +1,6 @@
-# How Sinatra Works, or How We Can 山寨 (Shanzhai) a mini Sinatra in 23 Lines of Code
+# Re-Implementing Sinatra
 
-The accompanying source code of following blog post lives in bare-minimum folder:
+This repo holds source code of following blog posts:
 
-https://theseus.xyz/how-sinatra-works-or-how-to-create-sinatra-clone-in-23-lines-of-code/
+- https://theseus.xyz/how-sinatra-works-or-how-to-create-sinatra-clone-in-23-lines-of-code/
+- https://theseus.xyz/re-implementing-sinatra-params-status-code-headers-erb-automatic-testing/

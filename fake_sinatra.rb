@@ -37,6 +37,11 @@ class FakeSinatra
 
   private
 
+  def redirect(target, code=302)
+    status(code)
+    headers 'Location' => target
+  end
+
   def headers(additional_headers)
     @headers = additional_headers
   end

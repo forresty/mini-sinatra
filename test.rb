@@ -86,6 +86,13 @@ _, headers, _ = get('/headers')
 assert_equal 'foo', headers['x-custom-value']
 assert_equal 'bar', headers['x-custom-value-2']
 
+status, _, _ = get('/temp-redirect')
+assert_equal 302, status
+
+status, headers, _ = get('/perm-redirect')
+assert_equal 301, status
+assert_equal 'http://google.com', headers['location']
+
 puts
 puts
 puts "all passed."

@@ -24,3 +24,11 @@ get '/header' do
   headers "X-Custom-Value" => "This is a custom HTTP header."
   'ok'
 end
+
+get '/temp-redirect' do
+  redirect 'http://google.com'
+end
+
+get '/perm-redirect' do
+  redirect 'http://google.com', 301
+end

@@ -31,7 +31,7 @@ def request(method, path, body={})
   end
 
   # status, headers, body
-  [ res.code.to_i, res.to_hash, res.body ]
+  [ res.code.to_i, Hash[res.each.to_a], res.body ]
 rescue Errno::ECONNREFUSED
   sleep 1 # if webrick is not ready we try again later
   retry
@@ -77,6 +77,14 @@ assert_equal %[{}], body
 status, headers, body = get('/non-existent')
 assert_equal 404, status
 assert_match /unknown/, body
+
+_, headers, _ = get('/header')
+# webrick turn headers into lowercase form
+assert_match /custom/, headers['x-custom-value']
+
+_, headers, _ = get('/headers')
+assert_equal 'foo', headers['x-custom-value']
+assert_equal 'bar', headers['x-custom-value-2']
 
 puts
 puts

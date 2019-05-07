@@ -17,7 +17,7 @@ class FakeSinatra
   end
 
   def service(req, res)
-    @status = 200 # reset to default
+    @status, @headers = 200, {} # reset to default
 
     block, path_params = match_route(req)
 
@@ -26,6 +26,7 @@ class FakeSinatra
     @params = req.query.merge(path_params)
     res.body = FakeSinatra.get_instance.instance_eval(&block).to_s
     res.status = @status # need to do this after evaluating the block
+    @headers.each { |k, v| res[k] = v }
   end
 
   def register(method, path, block)
@@ -35,6 +36,10 @@ class FakeSinatra
   end
 
   private
+
+  def headers(additional_headers)
+    @headers = additional_headers
+  end
 
   def status(code)
     @status = code

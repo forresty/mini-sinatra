@@ -14,7 +14,7 @@ app_pid = fork {
 # will be run in the parent process
 # child never reaches here
 
-# ensure killing webrick even errors are raised
+# ensure killing webrick even when errors are raised
 at_exit { Process.kill(:INT, app_pid) }
 
 require 'net/http'
@@ -33,7 +33,7 @@ def request(method, path, body={})
   # status, headers, body
   [ res.code.to_i, res.to_hash, res.body ]
 rescue Errno::ECONNREFUSED
-  sleep 1
+  sleep 1 # if webrick is not ready we try again later
   retry
 end
 

@@ -41,3 +41,7 @@ get '/time' do
   @time = Time.now
   erb :time
 end
+
+get '/self' do
+  self
+end

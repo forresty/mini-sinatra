@@ -15,7 +15,19 @@ app_pid = fork {
 # child never reaches here
 
 # ensure killing webrick even when errors are raised
-at_exit { Process.kill(:INT, app_pid) }
+at_exit {
+  begin
+    # run every method named "test_*"
+    private_methods.grep(/\Atest_/).each do |test|
+      method(test).call
+    end
+  ensure
+    Process.kill(:INT, app_pid)
+  end
+  puts
+  puts
+  puts "all passed."
+}
 
 require 'net/http'
 
